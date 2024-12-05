@@ -1,74 +1,87 @@
 package org.example;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class Selection {
-    private final ArrayList<BigDecimal> selection;
-    private final ArrayList<BigDecimal> sortedSelection;
+    private final ArrayList<Double> selection;
+    private final ArrayList<Double> sortedSelection;
 
-    public Selection(List<BigDecimal> selection){
+    public Selection(List<Double> selection) {
         this.selection = new ArrayList<>(selection);
-        sortedSelection = (ArrayList<BigDecimal>) this.selection.clone();
+        this.sortedSelection = new ArrayList<>(this.selection);
         Collections.sort(sortedSelection);
     }
-    public StringBuilder getStatisticSelection(){
-        StringBuilder statisticSelection = new StringBuilder("");
-        BigDecimal last = sortedSelection.get(0);
+
+
+    public StringBuilder getStatisticSelection() {
+        StringBuilder statisticSelection = new StringBuilder();
+        double last = sortedSelection.get(0);
         int count = 0;
-        for(BigDecimal a: sortedSelection){
-            if(last.equals(a)){
-                count = count + 1;
+
+        for (double a : sortedSelection) {
+            if (Double.compare(last, a) == 0) {
+                count++;
             } else {
-                statisticSelection.append("[%s, %d]\n".formatted(last, count));
+                statisticSelection.append("[%f, %d]\n".formatted(last, count));
                 last = a;
                 count = 1;
             }
         }
+        // Добавляем последний элемент
+        statisticSelection.append("[%f, %d]\n".formatted(last, count));
         return statisticSelection;
     }
-    public ArrayList<BigDecimal[]> getFunc() {
-        ArrayList<BigDecimal[]> func = new ArrayList<>();
-        BigDecimal last = sortedSelection.get(0);
-        BigDecimal n = BigDecimal.valueOf(selection.size());
+
+    /*
+    Эмпирическая функция
+     */
+    public ArrayList<double[]> getFunc() {
+        ArrayList<double[]> func = new ArrayList<>();
+        double n = sortedSelection.size();
+        double last = sortedSelection.get(0);
         int count = 0;
         int afterCount = 0;
-        MathContext mc = new MathContext(30);
-        for(BigDecimal a: sortedSelection){
-            if(last.equals(a)){
-                count = count + 1;
-                afterCount = afterCount + 1;
+
+        for (double a : sortedSelection) {
+            if (Double.compare(last, a) == 0) {
+                count++;
+                afterCount++;
             } else {
-                BigDecimal[] b = {a, BigDecimal.valueOf(afterCount-count).divide(n, mc)};
-                func.add(b);
-                afterCount = afterCount + 1;
+                func.add(new double[]{last, (double) (afterCount - count) / n});
+                last = a;
+                count = 1;
+                afterCount++;
             }
         }
+        // Добавляем последний элемент
+        func.add(new double[]{last, (double) afterCount / n});
         return func;
     }
+
     @Override
-    public String toString(){
+    public String toString() {
         return selection.toString();
     }
 
-    public ArrayList<BigDecimal> getSelection(){
+    public ArrayList<Double> getSelection() {
         return selection;
     }
-    public ArrayList<BigDecimal> getSorted(){
+
+    public ArrayList<Double> getSorted() {
         return sortedSelection;
     }
-    public BigDecimal getMin(){
+
+    public double getMin() {
         return sortedSelection.get(0);
     }
-    public BigDecimal getMax(){
-        return sortedSelection.get(sortedSelection.size()-1);
+
+    public double getMax() {
+        return sortedSelection.get(sortedSelection.size() - 1);
     }
-    public BigDecimal getRange(){
-        return (sortedSelection.get(sortedSelection.size()-1).add(sortedSelection.get(0).negate()));
+
+    public double getRange() {
+        return getMax() - getMin();
     }
 }
-
-
