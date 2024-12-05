@@ -14,7 +14,6 @@ public class Selection {
         Collections.sort(sortedSelection);
     }
 
-
     public StringBuilder getStatisticSelection() {
         StringBuilder statisticSelection = new StringBuilder();
         double last = sortedSelection.get(0);

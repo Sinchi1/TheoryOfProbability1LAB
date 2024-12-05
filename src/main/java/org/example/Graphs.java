@@ -19,6 +19,17 @@ public class Graphs {
     private final int numIntervals;
     private final double intervalLength;
 
+    public Graphs(Selection selection) {
+        this.selection = selection;
+
+        // Вычисление количества интервалов по правилу Стерджесса:
+        // k = ⌈1 + log2(N)⌉
+        numIntervals = (int) Math.ceil(1 + Math.log(selection.getSelection().size()) / Math.log(2));
+
+        // Длина интервала: range / numIntervals
+        intervalLength = selection.getRange() / numIntervals;
+    }
+
     public StringBuilder getIntervals() {
         // Строка для хранения информации об интервалах
         StringBuilder info = new StringBuilder("Количество интервалов: ")
@@ -27,7 +38,7 @@ public class Graphs {
                 .append(intervalLength)
                 .append("\n");
 
-        double start = selection.getMin(); // Начало первого интервала
+        double start = selection.getMin() - intervalLength/2; // Начало первого интервала
 
         for (int i = 0; i < numIntervals; i++) {
             double end = start + intervalLength; // Конец интервала
@@ -35,6 +46,7 @@ public class Graphs {
             long count = selection.getSelection().stream()
                     .filter(x -> x >= finalStart && x < end)
                     .count(); // Количество элементов в интервале
+
             info.append("Интервал [%f, %f): Частота = %d, Частотность = %f"
                             .formatted(start, end, count, (double) count / selection.getSelection().size()))
                     .append("\n");
@@ -88,19 +100,6 @@ public class Graphs {
         frame.setVisible(true);
     }
 
-
-
-    public Graphs(Selection selection) {
-        this.selection = selection;
-
-        // Вычисление количества интервалов по правилу Стерджесса:
-        // k = ⌈1 + log2(N)⌉
-        numIntervals = (int) Math.ceil(1 + Math.log(selection.getSelection().size()) / Math.log(2));
-
-        // Длина интервала: range / numIntervals
-        intervalLength = selection.getRange() / numIntervals;
-    }
-
     public void createPolygon() {
         XYSeries series = new XYSeries("Selection");
 
@@ -124,7 +123,7 @@ public class Graphs {
         dataset.addSeries(series);
 
         JFreeChart chart = ChartFactory.createXYLineChart(
-                "Полигон интервального ряда",
+                "Полигон",
                 "Середины интервалов",
                 "Частота",
                 dataset,
