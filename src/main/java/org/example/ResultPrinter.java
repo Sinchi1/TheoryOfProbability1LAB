@@ -50,20 +50,20 @@ public class ResultPrinter {
         int count = 0;
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(OUTPUT_FILE, true))) {
             writer.write("Эмпирическая функция распределения:\n");
-            writer.write("Fn(" + 0.0 + ") при x <" + selection.getMin() + ", ");
+            writer.write("Fn=" + 0.0 + " при x <" + selection.getMin() + ", \n");
             double last = selection.getMin();
             for (double[] arr : selection.getFunc() ) {
                 if (last == arr[0]){
                     continue;
                 }
                 if (arr[0] == selection.getMax()){
-                    writer.write("Fn(" + 0.95 + ") при "+ last + " < x <= " + arr[0] + ", \n");
+                    writer.write("Fn=" + 0.95 + " при "+ last + " < x <= " + arr[0] + ", \n");
                     continue;
                 }
-                writer.write("Fn(" + arr[1] + ") при "+ last + " < x <= " + arr[0] + ", \n");
+                writer.write("Fn=" + arr[1] + " при "+ last + " < x <= " + arr[0] + ", \n");
                 last = arr[0];
             }
-            writer.write("Fn(" + 1.0 + ") при x > " + selection.getMax() + "\n");
+            writer.write("Fn=" + 1.0 + " при x > " + selection.getMax() + "\n");
             writer.newLine();
         } catch (IOException e) {
             e.printStackTrace();
